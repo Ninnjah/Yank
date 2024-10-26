@@ -9,10 +9,12 @@ spotify_id = os.environ.get("spotify_id")
 spotify_secret = os.environ.get("spotify_secret")
 access_token = None
 
+
 def start_token_thread():
     client_id = spotify_id
     client_secret = spotify_secret
     get_access_token(client_id, client_secret)
+
 
 def get_access_token(client_id, client_secret):
     global access_token
@@ -32,17 +34,45 @@ def get_access_token(client_id, client_secret):
             print(f"Error retrieving access token: {str(e)}")
         time.sleep(600)
 
+
 async def spotify_isrc(track_id):
-                endpoint = f"https://api.spotify.com/v1/tracks/{track_id}"
-                headers = {
-                    "Authorization": f"Bearer {access_token}",
-                }
-                response = httpx.get(endpoint, headers=headers)
-                track = response.json()
-                return track
+    endpoint = f"https://api.spotify.com/v1/tracks/{track_id}"
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+    }
+    response = httpx.get(endpoint, headers=headers)
+    track = response.json()
+    return track
+
 
 async def spotify_playlist(playlist_id):
     endpoint = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+    }
+    song_isrcs = []
+    offset = 0
+    limit = 100
+    while True:
+        params = {
+            "offset": offset,
+            "limit": limit
+        }
+        response = httpx.get(endpoint, headers=headers, params=params)
+        playlist = response.json()
+        for i in playlist['items']:
+            try:
+                song_isrcs.append(i['track']['external_ids']['isrc'])
+            except:
+                pass
+        offset += limit
+        if offset >= playlist['total']:
+            break
+    return song_isrcs
+
+
+async def spotify_album(album_id):
+    endpoint = f"https://api.spotify.com/v1/album/{album_id}/tracks"
     headers = {
         "Authorization": f"Bearer {access_token}",
     }

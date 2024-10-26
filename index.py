@@ -38,6 +38,17 @@ async def serve_playlist(id):
             "message": "Playlist not found"
         }, 404
 
+@app.route('/playlist/<string:id>')
+async def serve_album(id):
+    try:
+        filename = await start_playlist(id)
+        return await send_file(filename, as_attachment=True, attachment_filename=f'{id}.zip', mimetype='application/zip'), 200
+    except:
+        return {
+            "failed": True,
+            "message": "Playlist not found"
+        }, 404
+
 @app.route("/stats")
 async def stats():
     return {

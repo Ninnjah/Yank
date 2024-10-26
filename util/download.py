@@ -9,7 +9,7 @@ from cryptography.utils import CryptographyDeprecationWarning
 from dotenv import load_dotenv
 from pydeezer import Deezer, Downloader
 from pydeezer.constants import track_formats
-from util.spotify import spotify_isrc, spotify_playlist
+from util.spotify import spotify_isrc, spotify_playlist, spotify_album
 from util.deezer import get_deezer_track
 
 warnings.filterwarnings("ignore", category=CryptographyDeprecationWarning)
@@ -102,7 +102,7 @@ async def start(id):
         print(f"{e} at line {sys.exc_info()[-1].tb_lineno}")
         return "none"
 
-async def start_playlist(id):
+async def start_playlist(id, is_album: bool = False):
     folder_to_zip = f'./music/{id}/'
     output_zip_file = f'./zip/{id}'
     pathfile = Path(f"./zip/{id}.zip")
@@ -113,7 +113,10 @@ async def start_playlist(id):
         return output_zip_file + ".zip"
 
     try:
-        playlist_isrcs = await spotify_playlist(isrc)
+        if not is_album:
+            playlist_isrcs = await spotify_playlist(isrc)
+        else:
+            playlist_isrcs = await spotify_album(isrc)
     except Exception as e:
         print("Spotify token expired or couldn't find ISRC")
         print(e)
