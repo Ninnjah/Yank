@@ -105,7 +105,7 @@ async def spotify_album(album_id):
             break
 
     track_list = await spotify_track_list([x for x in id_list if x is not None])
-    for track in track_list["track"]:
+    for track in track_list["tracks"]:
         isrc = track.get('external_ids', {}).get('isrc', "ISRC not available")
         if isrc != "ISRC not available":
             song_isrcs.append(isrc)
