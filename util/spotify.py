@@ -88,7 +88,7 @@ async def spotify_album(album_id):
     }
     song_isrcs = []
     offset = 0
-    limit = 100
+    limit = 50
     id_list = []
     while True:
         params = {
