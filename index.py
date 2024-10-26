@@ -38,7 +38,7 @@ async def serve_playlist(id):
             "message": "Playlist not found"
         }, 404
 
-@app.route('/playlist/<string:id>')
+@app.route('/album/<string:id>')
 async def serve_album(id):
     try:
         filename = await start_playlist(id)
