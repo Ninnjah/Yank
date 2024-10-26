@@ -82,7 +82,7 @@ async def spotify_playlist(playlist_id):
 
 
 async def spotify_album(album_id):
-    endpoint = f"https://api.spotify.com/v1/album/{album_id}/tracks"
+    endpoint = f"https://api.spotify.com/v1/albums/{album_id}/tracks"
     headers = {
         "Authorization": f"Bearer {access_token}",
     }
