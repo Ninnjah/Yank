@@ -45,6 +45,16 @@ async def spotify_isrc(track_id):
     return track
 
 
+async def spotify_track_list(track_id_list: list[str]):
+    endpoint = f"https://api.spotify.com/v1/tracks"
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+    }
+    response = httpx.get(endpoint, headers=headers, params={"ids": track_id_list})
+    track_list = response.json()
+    return track_list
+
+
 async def spotify_playlist(playlist_id):
     endpoint = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
     headers = {
@@ -79,6 +89,7 @@ async def spotify_album(album_id):
     song_isrcs = []
     offset = 0
     limit = 100
+    id_list = []
     while True:
         params = {
             "offset": offset,
@@ -87,11 +98,16 @@ async def spotify_album(album_id):
         response = httpx.get(endpoint, headers=headers, params=params)
         playlist = response.json()
         for i in playlist['items']:
-            try:
-                song_isrcs.append(i['track']['external_ids']['isrc'])
-            except:
-                pass
+            id_list.append(i.get('id'))
+
         offset += limit
         if offset >= playlist['total']:
             break
+
+    track_list = await spotify_track_list([x for x in id_list if x is not None])
+    for track in track_list["track"]:
+        isrc = track.get('external_ids', {}).get('isrc', "ISRC not available")
+        if isrc != "ISRC not available":
+            song_isrcs.append(isrc)
+
     return song_isrcs

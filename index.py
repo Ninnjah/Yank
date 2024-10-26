@@ -41,7 +41,7 @@ async def serve_playlist(id):
 @app.route('/album/<string:id>')
 async def serve_album(id):
     try:
-        filename = await start_playlist(id)
+        filename = await start_playlist(id, is_album=True)
         return await send_file(filename, as_attachment=True, attachment_filename=f'{id}.zip', mimetype='application/zip'), 200
     except:
         return {
